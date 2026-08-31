@@ -3,3 +3,5 @@ openai
 yfinance
 pandas
 numpy
+PyYAML
+exchange_calendars

@@ -1,0 +1,34 @@
+# 予測対象の銘柄リスト。1 銘柄 = 1 エントリ。
+#
+# 必須は symbol のみ（asset_class は symbol から推定できるが、明示推奨）。
+# 省略した項目は asset_class ごとの既定値（instruments.py: CLASS_DEFAULTS）→
+# 実行時に yfinance のメタ情報（会社名など）で自動補完される。
+# 既定を変えたい項目だけ書けばよい。
+#
+# asset_class: fx / jp_stock / us_stock
+# 指定できる主なキー:
+#   symbol             yfinance のティッカー（FX: JPY=X / 日本株: 7203.T / 米株: AAPL）
+#   asset_class        fx / jp_stock / us_stock
+#   display_name       表示名（省略時は会社名 or 通貨ペア）
+#   atr_multiplier     劣化モードのレンジ幅係数
+#   lookback_days      価格取得の暦日数
+#   price_decimals     表示小数桁
+#   search_queries     ニュース検索クエリ（省略時は自動生成）
+#   relevance_keywords ニュース関連度フィルタの正規表現（省略時は自動生成）
+#   enabled: false     一時的に無効化
+
+- symbol: JPY=X
+  asset_class: fx
+  display_name: ドル円
+
+- symbol: EURJPY=X
+  asset_class: fx
+  display_name: ユーロ円
+
+- symbol: 285A.T
+  asset_class: jp_stock
+  display_name: キオクシア
+
+- symbol: NVDA
+  asset_class: us_stock
+  display_name: NVIDIA
