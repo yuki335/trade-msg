@@ -117,13 +117,14 @@ python -m pytest -q
 ## サーバーへのデプロイ (systemd timer, 毎日 06:00 JST, 自動 git pull)
 
 ```bash
-# 1. クローン
+# 1. クローン（ubuntu ユーザー所有で配置）
 sudo git clone <repo-url> /opt/market-forecast
+sudo chown -R ubuntu:ubuntu /opt/market-forecast
 cd /opt/market-forecast
 
 # 2. config.py を作成（instruments.yaml はリポジトリに含まれる）
 cp config.example.py config.py
-sudo vi config.py
+vi config.py
 
 # 3. 初回デプロイ（venv 構築 + 依存インストール）
 chmod +x deploy.sh && ./deploy.sh
@@ -131,8 +132,8 @@ chmod +x deploy.sh && ./deploy.sh
 # 4. 動作確認
 venv/bin/python main.py --check
 
-# 5. deploy ユーザーで git pull できることを確認（read-only deploy key か HTTPS トークン）
-sudo -u deploy git -C /opt/market-forecast pull --ff-only
+# 5. ubuntu ユーザーで git pull できることを確認（自分の SSH 鍵 か HTTPS トークン）
+git -C /opt/market-forecast pull --ff-only
 #   所有者不一致で怒られたら: git config --global --add safe.directory /opt/market-forecast
 
 # 6. systemd 登録

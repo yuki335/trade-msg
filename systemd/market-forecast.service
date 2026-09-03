@@ -10,4 +10,4 @@ WorkingDirectory=/opt/market-forecast
 ExecStartPre=-/usr/bin/git -C /opt/market-forecast pull --ff-only --quiet
 ExecStartPre=-/opt/market-forecast/venv/bin/pip install -q -r requirements.txt
 ExecStart=/opt/market-forecast/venv/bin/python main.py
-User=deploy
+User=ubuntu
