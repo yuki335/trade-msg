@@ -114,28 +114,49 @@ for prof in instruments.load_instruments():
 python -m pytest -q
 ```
 
-## GitHub Actionsでの運用 (scheduled workflow, 毎日 06:00 JST)
+## サーバーへのデプロイ (systemd timer, 毎日 06:00 JST, 自動 git pull)
 
-`.github/workflows/notify.yml` が毎日 UTC 21:00 (JST 翌06:00) に実行される。
-`.github/workflows/test.yml` は push / pull_request のたびに `pytest` を実行する。
+```bash
+# 1. クローン（ubuntu ユーザー所有で配置）
+sudo git clone <repo-url> /opt/market-forecast
+sudo chown -R ubuntu:ubuntu /opt/market-forecast
+cd /opt/market-forecast
 
-1. リポジトリの Settings > Secrets and variables > Actions > New repository secret から、以下4つを登録する
-   - `TELEGRAM_BOT_TOKEN`
-   - `TELEGRAM_CHAT_ID`
-   - `DEEPSEEK_API_KEY`
-   - `TAVILY_API_KEY`
-2. Actions タブ > "Send market forecasts" > "Run workflow" で手動実行し、正常終了とTelegram受信を確認する
-3. 以降は毎日UTC 21:00 (JST 翌06:00) に自動実行される
+# 2. config.py を作成（instruments.yaml はリポジトリに含まれる）
+cp config.example.py config.py
+vi config.py
 
-実行時刻を変更したい場合は `.github/workflows/notify.yml` の `cron` を編集する(cronはUTC基準)。
+# 3. 初回デプロイ（venv 構築 + 依存インストール）
+chmod +x deploy.sh && ./deploy.sh
 
-**注意:** GitHub Actionsのscheduled workflowは、リポジトリに60日間コミットが無いと自動的に無効化される。
-その場合はActionsタブから手動で再度有効化する必要がある。
+# 4. 動作確認
+venv/bin/python main.py --check
+
+# 5. ubuntu ユーザーで git pull できることを確認（自分の SSH 鍵 か HTTPS トークン）
+git -C /opt/market-forecast pull --ff-only
+#   所有者不一致で怒られたら: git config --global --add safe.directory /opt/market-forecast
+
+# 6. systemd 登録
+sudo cp systemd/market-forecast.service systemd/market-forecast.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now market-forecast.timer
+
+# 7. 確認
+systemctl list-timers market-forecast.timer
+sudo systemctl start market-forecast.service   # 即時テスト実行
+journalctl -u market-forecast.service -n 40
+```
+
+`market-forecast.service` の `ExecStartPre` が実行のたびに `git pull --ff-only` +
+`pip install` を行う（先頭 `-` 付きなので失敗しても直前の正常版で forecast は継続）。
 
 ## 銘柄の追加・変更フロー
 
-1. GitHub で `instruments.yaml` を編集して commit・push
-2. 次回の定期実行(または手動実行)で最新の内容がそのまま使われる(実行のたびにリポジトリを新規checkoutするため、反映待ちは不要)
+1. スマホ / PC の GitHub で `instruments.yaml` を編集して commit
+2. 翌 06:00 JST、timer が `git pull` → `main.py` を実行して反映
+3. すぐ反映したいときは `sudo systemctl start market-forecast.service`
+
+サーバー上で `instruments.yaml` を直接編集しないこと（`git pull` / `git reset` で消える）。
 
 ## 実行時に必要な外向き通信
 
@@ -143,6 +164,7 @@ python -m pytest -q
 |---|---|
 | `api.telegram.org:443` | Telegram Bot API |
 | `api.deepseek.com:443` | DeepSeek API |
-| `api.tavily.com:443` | Tavily 検索 API(`TAVILY_API_KEY` 未設定なら不要) |
-| `query1.finance.yahoo.com:443` / `query2.finance.yahoo.com:443` | yfinance(価格・会社名メタ) |
+| `api.tavily.com:443` | Tavily 検索 API（`TAVILY_API_KEY` 未設定なら不要） |
+| `query1.finance.yahoo.com:443` / `query2.finance.yahoo.com:443` | yfinance（価格・会社名メタ） |
 | `stooq.com:443` | フォールバック価格 |
+| GitHub（`github.com:443` / `:22`） | systemd の自動 `git pull` |

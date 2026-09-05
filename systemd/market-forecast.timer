@@ -1,0 +1,11 @@
+[Unit]
+Description=Run market forecast sender daily at 06:00 JST
+
+[Timer]
+# 毎日 06:00 JST。銘柄ごとに市場の取引日を自己判定するので土日・祝日は自動スキップ。
+# systemd v240 未満や UTC 固定サーバーでは "OnCalendar=*-*-* 21:00:00"（前日21:00 UTC）に変更。
+OnCalendar=*-*-* 06:00:00 Asia/Tokyo
+Persistent=true
+
+[Install]
+WantedBy=timers.target
