@@ -1,0 +1,52 @@
+name: Send market forecasts
+
+on:
+  schedule:
+    - cron: '0 21 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create config.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+        run: |
+          cat > config.py << EOF
+          TELEGRAM_BOT_TOKEN = "$TELEGRAM_BOT_TOKEN"
+          TELEGRAM_CHAT_ID = "$TELEGRAM_CHAT_ID"
+          DEEPSEEK_API_KEY = "$DEEPSEEK_API_KEY"
+          DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+          DEEPSEEK_MODEL = "deepseek-reasoner"
+          TIMEZONE = "Asia/Tokyo"
+          WEB_CONTEXT_ENABLED = True
+          TAVILY_API_KEY = "$TAVILY_API_KEY"
+          WEB_MAX_RESULTS_PER_QUERY = 4
+          WEB_MAX_ARTICLES = 5
+          WEB_ARTICLE_CHARS = 800
+          WEB_TOTAL_CHARS = 4000
+          WEB_FETCH_TIMEOUT = 15
+          WEB_SUMMARY_MAX_LINES = 5
+          DEEPSEEK_PROMPT_DUMP = False
+          PROMPT_DUMP_DIR = "logs"
+          EDGE_ALERT_RATIO = 0.30
+          EDGE_ALERT_ONLY = True
+          TRADING_DAY_CHECK = True
+          EXTRA_HOLIDAYS = {"fx": [], "jpx": [], "nyse": []}
+          EOF
+
+      - name: Run forecast
+        run: python main.py
