@@ -21,9 +21,9 @@
   asset_class: fx
   display_name: ドル円
 
-- symbol: EURJPY=X
-  asset_class: fx
-  display_name: ユーロ円
+- symbol: 2695
+  asset_class: jp_stock
+  display_name: くら寿司
 
 - symbol: 285A.T
   asset_class: jp_stock
