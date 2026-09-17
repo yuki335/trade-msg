@@ -21,6 +21,10 @@
   asset_class: fx
   display_name: ドル円
 
+- symbol: AUDUSD=X
+  asset_class: fx
+  display_name: 豪ドル
+
 - symbol: 1671
   asset_class: jp_stock
   display_name: 原油価格
