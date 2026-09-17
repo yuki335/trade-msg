@@ -33,6 +33,10 @@
   asset_class: jp_stock
   display_name: キオクシア
 
+- symbol: 4385
+  asset_class: jp_stock
+  display_name: メルカリ
+
 - symbol: NVDA
   asset_class: us_stock
   display_name: NVIDIA
