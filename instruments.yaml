@@ -21,9 +21,9 @@
   asset_class: fx
   display_name: ドル円
 
-- symbol: 2695
+- symbol: 1671
   asset_class: jp_stock
-  display_name: くら寿司
+  display_name: 原油価格
 
 - symbol: 285A.T
   asset_class: jp_stock
