@@ -33,9 +33,9 @@
   asset_class: jp_stock
   display_name: キオクシア
 
-- symbol: 4385
+- symbol: 8306
   asset_class: jp_stock
-  display_name: メルカリ
+  display_name: 三菱UFJ
 
 - symbol: NVDA
   asset_class: us_stock
