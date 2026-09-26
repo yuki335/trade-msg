@@ -21,9 +21,9 @@
   asset_class: fx
   display_name: ドル円
 
-- symbol: AUDUSD=X
+- symbol: TRYJPY=X
   asset_class: fx
-  display_name: 豪ドル
+  display_name: リラ円
 
 - symbol: 1671
   asset_class: jp_stock
