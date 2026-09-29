@@ -29,6 +29,10 @@
   asset_class: jp_stock
   display_name: 原油価格
 
+- symbol: 7014
+  asset_class: jp_stock
+  display_name: 名村造船
+
 - symbol: 285A.T
   asset_class: jp_stock
   display_name: キオクシア
